@@ -1,0 +1,48 @@
+
+name: Synopsys Security Stack
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main" ]
+  schedule:
+    - cron: '43 23 * * 5'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Static Analysis with Polaris
+      run: |
+          export POLARIS_SERVER_URL=${{ secrets.POLARIS_SERVER_URL}}
+          export POLARIS_ACCESS_TOKEN=${{ secrets.POLARIS_ACCESS_TOKEN}}
+          wget -q ${{ secrets.POLARIS_SERVER_URL}}/api/tools/polaris_cli-linux64.zip
+          unzip -j polaris_cli-linux64.zip -d /tmp
+          /tmp/polaris analyze -w
+
+    - name: Perform Blackduck Analysis
+      uses: blackducksoftware/github-action@v2.2
+      with:
+        version: 7
+        blackduck.url: ${{ secrets.BLACKDUCK_URL }}
+        blackduck.api.token: ${{ secrets.BLACKDUCK_TOKEN }}
+        args: --detect.project.name="${{ secrets.BLACKDUCK_PROJECT_NAME }}"
+          --detect.blackduck.signature.scanner.upload.source.mode=false
+          --detect.project.version.name="${{ secrets.BLACKDUCK_PROJ_VERSION }}"
+          --detect.wait.for.results=false
+          --logging.level.com.synopsys.integration=DEBUG
+          --detect.risk.report.pdf=false
+          --detect.timeout=3600
+          --detect.detector.search.depth=9
+          --detect.project.codelocation.unmap=true
