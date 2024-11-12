@@ -1,0 +1,20 @@
+{
+	"data": {
+		"polaris": {
+			"application": {
+				"name": "CIT-XD"
+			},
+			"project": {
+				"name": "BadRepo"
+			},
+			"branch": {
+				"name": "main"
+			},	
+			"assessment": {
+				"types":  ["SAST", "SCA"]
+
+			},
+			"serverurl": "https://eu.polaris.synopsys.com"
+		}
+	}
+}
