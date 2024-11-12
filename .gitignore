@@ -43,6 +43,8 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+.bridge/
+.codesight/
 nosetests.xml
 coverage.xml
 *,cover

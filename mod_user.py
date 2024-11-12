@@ -15,6 +15,9 @@ def do_login():
 
         username = request.form.get('username')
         password = request.form.get('password')
+        if not password or len(password) < 8:
+            flash("Password must be at least 8 characters long")
+            return render_template('user.chpasswd.html')
         otp = request.form.get('otp')
 
         username = libuser.login(username, password)
@@ -77,7 +80,7 @@ def do_chpasswd():
             flash("The password don't comply our complexity requirements")
             return render_template('user.chpasswd.html')
 
-        libuser.password_change(g.session['username'], password) # = libuser.login(username, password)
+        libuser.login(username, password)
         flash("Password changed")
 
     return render_template('user.chpasswd.html')
